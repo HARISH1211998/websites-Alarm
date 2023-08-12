@@ -1,60 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>URL Checker</title>
+    <title>URL Status Checker</title>
+    <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <meta http-equiv="refresh" content="60"> 
     <style>
+        /* Background image animation */
+        body {
+            background-image: url('your-image-url.jpg');
+            background-size: cover;
+            color: black;
+            animation: slide 20s linear infinite alternate; /* Adjust animation properties as needed */
+        }
+
+        @keyframes slide {
+            0% {
+                background-color: rgb(228, 121, 123);
+            }
+            50% {
+                background-color: white;
+            }
+            100% {
+                background-color: skyblue;
+            }
+        }
     </style>
-    <meta http-equiv="refresh" content="60"> <!-- Auto-refresh every 60 seconds (1 minute) -->
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-3 mb-1">
-        <h1>URL Checker</h1>
-    </header>
-    <!-- Add URL Modal -->
-    <div class="modal fade" id="addUrlModal" tabindex="-1" aria-labelledby="addUrlModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addUrlModalLabel">Add URL</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="/add_url" method="POST">
-                        <div class="mb-3">
-                            <label for="url" class="form-label">URL</label>
-                            <input type="url" class="form-control" id="url" name="url" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-10">
-            </div>
-            <div class="col-2">
-                <div class="mt-md-2 mb-md-1 float-right">
-                    <button type="button" class="btn btn-primary pl-md-5" data-bs-toggle="modal" data-bs-target="#addUrlModal">Add URL</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container">
+    <div class="container mt-5">
+        <h1 class="mb-4">URL Status Checker</h1>
         <div class="row">
             {% for result in results %}
-                <div class="col-md-3 mb-4">
-                    <div class="card {% if 'status code 200' in result %}bg-success{% elif 'status code 4' in result or 'status code 5' in result %}bg-error{% endif %}">
-                        <div class="card-body">
-                            <p class="card-text">{{ result }}</p>
-                        </div>
+            <div class="col-md-6">
+                <div class="card {% if 'status code 200' in result %}bg-success{% else %}bg-danger{% endif %} mb-3">
+                    <div class="card-body">
+                        <p class="card-text">{{ result }}</p>
                     </div>
                 </div>
+            </div>
             {% endfor %}
         </div>
+        <button type="button" class="btn btn-primary" onclick="openUrlPopup()">Add URL</button>
     </div>
+
+    <!-- Include Bootstrap JS (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Auto-refresh the page every 5 minutes
+        setTimeout(function() {
+            location.reload();
+        }, 5 * 60 * 1000);
+
+        // Function to open the URL popup
+        function openUrlPopup() {
+            var newUrl = prompt("Enter the URL you want to add:", "");
+            if (newUrl !== null && newUrl.trim() !== "") {
+                // Send the URL to the server for saving
+                fetch('/add-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: newUrl })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("URL added successfully!");
+                        // Refresh the page to reflect the changes
+                        location.reload();
+                    } else {
+                        alert("Failed to add URL. Please try again.");
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>
