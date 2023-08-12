@@ -11,13 +11,12 @@ def index():
     with open(csv_file_path, 'r', newline='') as csv_file:
         csv_reader = csv.reader(csv_file)
         for row in csv_reader:
-            name = row[0]
-            url = row[1]
-            urls.append((name, url))  # Append a tuple of (name, url)
+            url = row[0]
+            urls.append(url)  # Append a tuple of (name, url)
 
     results = []
     names=[]
-    for name, url in urls:
+    for url in urls:
         try:
             response = requests.get(url)
             status = response.status_code
@@ -27,8 +26,6 @@ def index():
                 result = f"The URL {url} is reachable but returns a status code {status}."
         except requests.ConnectionError:
             result = f"The URL {url} is unreachable."
-            name = f"Project name {name}"
-        names.append(name)
         results.append(result)  # Append a tuple of (name, result)
 
     return render_template('index.html', results=results, names=names)
